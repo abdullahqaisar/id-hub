@@ -34,6 +34,7 @@ export class AppService {
     };
 
     try {
+      console.log('Before Api Call');
       const response = await firstValueFrom(
         this.httpService.post(
           'https://id-hub.vercel.app/callback-url?abd=xyz&param=a',

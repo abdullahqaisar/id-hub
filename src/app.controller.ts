@@ -7,7 +7,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('callback-url')
-  getReqParams(@Query() query: any, @Res() res: Response): void {
-    this.appService.getReqParams(query, res);
+  async getReqParams(@Query() query: any, @Res() res: Response): Promise<void> {
+    await this.appService.getReqParams(query, res);
   }
 }
