@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { Response } from 'express';
 
 @Injectable()
 export class AppService {
-  getReqParams(query): string {
+  getReqParams(query: any, res: Response): void {
     console.log('Query Params:', query);
-    return 'Request Logged';
+    // Redirect to a specific URL
+    res.redirect('https://login-iaajtj-dev2.fa.ocs.oraclecloud.com/');
   }
 }
