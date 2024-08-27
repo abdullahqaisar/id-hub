@@ -12,7 +12,7 @@ export class AppService {
   ) {}
 
   async getReqParams(query: any, res: Response): Promise<void> {
-    console.log('Query Params:', query);
+    console.log('Query:', query);
 
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
@@ -37,7 +37,7 @@ export class AppService {
       console.log('Before Api Call');
       const response = await firstValueFrom(
         this.httpService.post(
-          'https://id-hub.vercel.app/callback-url?abd=xyz&param=a',
+          'https://idhub.kku.ac.th/api/v1/oauth2/token',
           data,
           config,
         ),
