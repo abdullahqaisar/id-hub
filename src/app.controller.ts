@@ -8,6 +8,6 @@ export class AppController {
 
   @Get('callback-url')
   async getReqParams(@Query() query: any, @Res() res: Response): Promise<void> {
-    return await this.appService.getReqParams(query, res);
+    await this.appService.getReqParams(query, res);
   }
 }
