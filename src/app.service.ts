@@ -45,8 +45,7 @@ export class AppService {
 
       console.log('Response:', response);
 
-      // Redirect to a specific URL
-      res.redirect('https://login-iaajtj-dev2.fa.ocs.oraclecloud.com/');
+      res.send(response.data);
     } catch (error) {
       throw error;
     }
