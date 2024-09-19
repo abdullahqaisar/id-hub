@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { AppService } from './app.service';
       isGlobal: true,
     }),
     HttpModule,
+    JwtModule,
   ],
   controllers: [AppController],
   providers: [AppService],

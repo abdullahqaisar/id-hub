@@ -3,12 +3,14 @@ import { HttpService } from '@nestjs/axios';
 import { Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async getReqParams(query: any, res: Response): Promise<void> {
@@ -43,12 +45,47 @@ export class AppService {
         ),
       );
 
-      console.log('Response:', response.data);
+      const decodedToken = this.jwtService.decode(response.data.id_token);
 
-      // Redirect to a specific URL
+      const {
+        name,
+        name_en,
+        birthdate,
+        address,
+        gender,
+        given_name,
+        given_name_en,
+        middle_name,
+        middle_name_en,
+        family_name,
+        family_name_en,
+        titleEn,
+        titleTh,
+        pid,
+      } = decodedToken;
+
+      // address in address.formated
+
       res.redirect('https://login-iaajtj-dev2.fa.ocs.oraclecloud.com/');
     } catch (error) {
       throw error;
+    }
+  }
+
+  handleVerificationButtonClick(query: any, res: Response) {
+    const userToken = query.jwt;
+
+    console.log('User Token:', userToken);
+
+    try {
+      // Step 1: Fetch and decode the token
+      // Step 2: Store the token or user info (Optional)
+      // await this.cacheManager.set(pid, response.data.id_token); // Example to store in cache
+      // // Step 3: Redirect to QR code scan page
+      // res.redirect(`https://your-app.com/qr-code-scan?name=${name}&pid=${pid}`);
+    } catch (error) {
+      console.error('Error while processing JWT:', error);
+      res.status(500).json({ error: 'Failed to process request' });
     }
   }
 }
