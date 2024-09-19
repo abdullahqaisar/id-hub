@@ -82,7 +82,7 @@ export class AppService {
       // Step 2: Store the token or user info (Optional)
       // await this.cacheManager.set(pid, response.data.id_token); // Example to store in cache
       // // Step 3: Redirect to QR code scan page
-      // res.redirect(`https://your-app.com/qr-code-scan?name=${name}&pid=${pid}`);
+      res.redirect('https://login-iaajtj-dev2.fa.ocs.oraclecloud.com/');
     } catch (error) {
       console.error('Error while processing JWT:', error);
       res.status(500).json({ error: 'Failed to process request' });
