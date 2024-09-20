@@ -15,6 +15,8 @@ export class AppService {
 
   handleVerificationButtonClick(query: any, res: Response) {
     const userToken = query.jwt;
+    console.log('User Token:', userToken);
+
     res.cookie('jwt', userToken, {
       httpOnly: true,
       secure: false,
