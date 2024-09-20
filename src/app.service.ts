@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -13,11 +13,29 @@ export class AppService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async getReqParams(query: any, res: Response): Promise<void> {
-    console.log('Request Query:', query);
+  handleVerificationButtonClick(query: any, res: Response) {
+    const userToken = query.jwt;
+    res.cookie('jwt', userToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 3600000,
+    });
 
+    try {
+      res.redirect(
+        'https://idhub.kku.ac.th/api/v1/oauth2/auth?response_type=code&client_id=8deb9666-1c0d-43a4-bccf-52095609cc53&redirect_uri=https://id-hub.vercel.app/callback-url&state=login',
+      );
+    } catch (error) {
+      console.error('Error while processing JWT:', error);
+      res.status(500).json({ error: 'Failed to process request' });
+    }
+  }
+
+  async getReqParams(query: any, req: Request, res: Response): Promise<void> {
     const clientId = this.configService.get<string>('CLIENT_ID');
     const clientSecret = this.configService.get<string>('CLIENT_SECRET');
+    const jwt = req.cookies.jwt;
+    console.log('JWT Cookie: ', jwt);
 
     const data = {
       client_id: clientId,
@@ -36,7 +54,6 @@ export class AppService {
     };
 
     try {
-      console.log('Before Api Call');
       const response = await firstValueFrom(
         this.httpService.post(
           'https://idhub.kku.ac.th/api/v1/oauth2/token',
@@ -47,45 +64,30 @@ export class AppService {
 
       const decodedToken = this.jwtService.decode(response.data.id_token);
 
-      const {
-        name,
-        name_en,
-        birthdate,
-        address,
-        gender,
-        given_name,
-        given_name_en,
-        middle_name,
-        middle_name_en,
-        family_name,
-        family_name_en,
-        titleEn,
-        titleTh,
-        pid,
-      } = decodedToken;
+      const cloudEnvironment =
+        this.configService.get<string>('CLOUD_ENVIRONMENT');
+      const oracleCloudApiUrl = `${cloudEnvironment}/hcmRestApi/resources/11.13.18.05/workers`;
 
-      // address in address.formated
+      const apiConfig = {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+          'Content-Type': 'application/json',
+        },
+      };
 
-      res.redirect('https://login-iaajtj-dev2.fa.ocs.oraclecloud.com/');
+      const body = {
+        name_en: decodedToken.name_en,
+      };
+
+      const apiResponse = await firstValueFrom(
+        this.httpService.post(oracleCloudApiUrl, body, apiConfig),
+      );
+
+      console.log('API Response:', apiResponse.data);
+
+      res.redirect(cloudEnvironment);
     } catch (error) {
       throw error;
-    }
-  }
-
-  handleVerificationButtonClick(query: any, res: Response) {
-    const userToken = query.jwt;
-
-    console.log('User Token:', userToken);
-
-    try {
-      // Step 1: Fetch and decode the token
-      // Step 2: Store the token or user info (Optional)
-      // await this.cacheManager.set(pid, response.data.id_token); // Example to store in cache
-      // // Step 3: Redirect to QR code scan page
-      res.redirect('https://login-iaajtj-dev2.fa.ocs.oraclecloud.com/');
-    } catch (error) {
-      console.error('Error while processing JWT:', error);
-      res.status(500).json({ error: 'Failed to process request' });
     }
   }
 }

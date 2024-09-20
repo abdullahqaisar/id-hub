@@ -1,14 +1,18 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('callback-url')
-  async getReqParams(@Query() query: any, @Res() res: Response): Promise<void> {
-    await this.appService.getReqParams(query, res);
+  async getReqParams(
+    @Query() query: any,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    await this.appService.getReqParams(query, req, res);
   }
 
   @Get('verify-identity')
