@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Request, Response } from 'express';
 
@@ -6,13 +6,14 @@ import { Request, Response } from 'express';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('callback-url')
+  @Get('callback-url/:username')
   async getReqParams(
+    @Param('username') username: string,
     @Query() query: any,
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    await this.appService.getReqParams(query, req, res);
+    await this.appService.updateWorker({ ...query, username }, req, res);
   }
 
   @Get('verify-identity')
