@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('callback-url/:username')
+  @Get('update-information')
   async getReqParams(
     @Param('username') username: string,
     @Query() query: any,
@@ -16,8 +16,8 @@ export class AppController {
     await this.appService.updateWorker({ ...query, username }, req, res);
   }
 
-  @Get('verify-identity')
-  getUserCredentials(@Query() query: any, @Res() res: Response) {
-    this.appService.handleVerificationButtonClick(query, res);
-  }
+  // @Get('verify-identity')
+  // getUserCredentials(@Query() query: any, @Res() res: Response) {
+  //   this.appService.handleVerificationButtonClick(query, res);
+  // }
 }
